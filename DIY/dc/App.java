@@ -150,7 +150,7 @@ public class App extends MultiDexApplication {
     }
 
     private void putDefaultApis() {
-        String url = "";
+        //String url = "";
 
         // 默认加速历史记录
         List<String> proxyUrlHistory = Hawk.get(HawkConfig.PROXY_URL_HISTORY, new ArrayList<>());
