@@ -153,12 +153,12 @@ public class App extends MultiDexApplication {
         //String url = "";
 
         // 默认加速历史记录
-        List<String> proxyUrlHistory = Hawk.get(HawkConfig.PROXY_URL_HISTORY, new ArrayList<>());
-        proxyUrlHistory.add(url);
-        proxyUrlHistory.add("https://github.moeyy.xyz/");
-        proxyUrlHistory.add("https://gh.ddlc.top/");
-        proxyUrlHistory.add("https://ghps.cc/");
-        proxyUrlHistory.add("https://raw.bunnylblbblbl.eu.org/");
+        //List<String> proxyUrlHistory = Hawk.get(HawkConfig.PROXY_URL_HISTORY, new ArrayList<>());
+        //proxyUrlHistory.add("");
+        //proxyUrlHistory.add("https://github.moeyy.xyz/");
+       //proxyUrlHistory.add("https://gh.ddlc.top/");
+        //proxyUrlHistory.add("https://ghps.cc/");
+       // proxyUrlHistory.add("https://raw.bunnylblbblbl.eu.org/");
         // 默认线路地址
         String defaultApiName = "默认线路";
         String defaultApi = "https://agit.ai/wwz09/ubuntu/raw/branch/master/main.json";
