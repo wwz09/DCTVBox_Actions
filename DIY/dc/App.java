@@ -163,7 +163,7 @@ public class App extends MultiDexApplication {
         String defaultApiName = "默认线路";
         String defaultApi = "https://agit.ai/wwz09/ubuntu/raw/branch/master/main.json";
         // 默认仓库地址
-        String defaultStoreApi = "https://agit.ai/wwz09/ubuntu/raw/branch/master/dc.json";
+        String defaultStoreApi = "https://agit.ai/wwz09/ubuntu/raw/branch/master/TXT/dc.json";
 
         Map<String, String> defaultApiMap = Hawk.get(HawkConfig.API_MAP, new HashMap<>());
         defaultApiMap.put(defaultApiName, defaultApi);
@@ -178,7 +178,7 @@ public class App extends MultiDexApplication {
         // putDefault(HawkConfig.API_MAP, defaultApiMap);
 
         putDefault(HawkConfig.DEFAULT_STORE_API, defaultStoreApi);
-        putDefault(HawkConfig.PROXY_URL_HISTORY, proxyUrlHistory);
+        //putDefault(HawkConfig.PROXY_URL_HISTORY, proxyUrlHistory);
     }
 
     private void putDefault(String key, Object value) {
