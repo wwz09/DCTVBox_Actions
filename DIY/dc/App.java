@@ -172,12 +172,17 @@ public class App extends MultiDexApplication {
         defaultApiHistory.add(defaultApiName);
 
         // 不添加默认线路
-        // putDefault(HawkConfig.API_URL, defaultApi);
-        // putDefault(HawkConfig.API_NAME, defaultApiName);
+        putDefault(HawkConfig.API_URL, defaultApi);
+        putDefault(HawkConfig.API_NAME, defaultApiName);
         // putDefault(HawkConfig.API_NAME_HISTORY, defaultApiHistory);
         // putDefault(HawkConfig.API_MAP, defaultApiMap);
 
         putDefault(HawkConfig.DEFAULT_STORE_API, defaultStoreApi);
+        putDefault(HawkConfig.PLAY_TYPE, 1);
+        putDefault(HawkConfig.HOME_REC, 1);
+        // 默认渲染方式：推荐手机使用0-texture，电视1-surface
+        putDefault(HawkConfig.PLAY_RENDER, 1);
+        putDefault(HawkConfig.IJK_CODEC, "硬解码");
         //putDefault(HawkConfig.PROXY_URL_HISTORY, proxyUrlHistory);
     }
 
