@@ -183,7 +183,7 @@ public class App extends MultiDexApplication {
         // 默认渲染方式：推荐手机使用0-texture，电视1-surface
         putDefault(HawkConfig.PLAY_RENDER, 1);
         putDefault(HawkConfig.IJK_CODEC, "硬解码");
-        //putDefault(HawkConfig.PROXY_URL_HISTORY, proxyUrlHistory);
+        putDefault(HawkConfig.HOME_REC_STYLE, false);// 首页多行
     }
 
     private void putDefault(String key, Object value) {
