@@ -50,16 +50,16 @@ public class Checker {
                     .build();
         }
 
-      //  OkGo.<String>get(URL.DOMAIN_NAME_PROXY)
-          //      .client(mClient)
-           //     .execute(new StringCallback() {
+        OkGo.<String>get("")
+                .client(mClient)
+                .execute(new StringCallback() {
 
-            //        boolean isAvailable;
+                    boolean isAvailable;
 
-             //       @Override
-              //      public void onSuccess(Response<String> response) {
-                //        isAvailable = true;
-               //     }
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        isAvailable = true;
+                    }
 
                     @Override
                     public void onError(Response<String> response) {
@@ -72,9 +72,9 @@ public class Checker {
                         super.onFinish();
                         if (onProxyAvailableListener != null) {
                             onProxyAvailableListener.available(isAvailable);
-                        }
+                       }
                     }
-                });
+               });
     }
 
     public void checkProxy(OnProxyAvailableListener onProxyAvailableListener, String url) {
