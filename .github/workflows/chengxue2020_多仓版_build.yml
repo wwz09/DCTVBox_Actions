@@ -70,7 +70,7 @@ jobs:
           cp -rf $GITHUB_WORKSPACE/DIY/dc/ModelSettingFragment.java app/src/main/java/com/github/tvbox/osc/bbox/ui/fragment/ModelSettingFragment.java
           cp -rf $GITHUB_WORKSPACE/DIY/dc/Checker.java app/src/main/java/com/github/tvbox/osc/bbox/util/Checker.java
           cp -rf $GITHUB_WORKSPACE/DIY/dc/App.java app/src/main/java/com/github/tvbox/osc/bbox/base/App.java
-          sed -i 's%Jade_SHJ%Jade_SHJ.${{ matrix.osName }}%g' app/build.gradle
+          sed -i 's%tv.org.eu.bunnyabc%tv.org.eu.bunnyabc.${{ matrix.osName }}%g' app/build.gradle
           sed -i 's%Jade%酷影视%g' app/src/main/res/values/strings.xml
           
            
@@ -151,7 +151,7 @@ jobs:
           allowUpdates: true
           removeArtifacts: true
           artifacts: |
-            ${{ matrix.appName }}/apk/*.apk
+            ${{ matrix.repoName }}/apk/*.apk
   
       - name: 删除旧发布的固件
         uses: dev-drprasad/delete-older-releases@v0.2.1
