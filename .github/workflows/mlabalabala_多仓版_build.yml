@@ -151,7 +151,7 @@ jobs:
           allowUpdates: true
           removeArtifacts: true
           artifacts: |
-            ${{ matrix.appName }}/apk/*.apk
+            ${{ matrix.repoName }}/apk/*.apk
   
       - name: 删除旧发布的固件
         uses: dev-drprasad/delete-older-releases@v0.2.1
