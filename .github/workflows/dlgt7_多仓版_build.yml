@@ -19,7 +19,7 @@ jobs:
           - userName: dlgt7
             repoName: duocangbox
             branchName: main
-            appName: duocangBOX
+            appName: dlgt7
             osName: ccb
    
     steps:
