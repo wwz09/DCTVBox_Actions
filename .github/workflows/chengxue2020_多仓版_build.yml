@@ -19,7 +19,7 @@ jobs:
           - userName: chengxue2020
             repoName: box
             branchName: main
-            appName: DCB_TVBOX
+            appName: chengxue2020_TVBOX
             osName: DCB
    
     steps:
