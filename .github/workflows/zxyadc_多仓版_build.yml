@@ -17,9 +17,9 @@ jobs:
       matrix:
         include:
           - userName: zxyadc
-            repoName: box
+            repoName: b-box
             branchName: main
-            appName: mlaba_TVBOX
+            appName: zxyadc_TVBOX
             osName: CMB
    
     steps:
