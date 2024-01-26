@@ -19,7 +19,7 @@ jobs:
           - userName: mlabalabala
             repoName: box
             branchName: main
-            appName: mlabalabala
+            appName: mlaba
             osName: cmb
    
     steps:
