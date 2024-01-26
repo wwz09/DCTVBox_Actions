@@ -1,4 +1,4 @@
-name: mlabalabala_多仓版_build
+name: zxyadc_多仓版_build
 
 on:
   schedule:
@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - userName: mlabalabala
+          - userName: zxyadc
             repoName: box
             branchName: main
             appName: mlaba_TVBOX
