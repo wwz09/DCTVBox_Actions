@@ -50,7 +50,7 @@ public class Checker {
                     .build();
         }
 
-        OkGo.<String>get("")
+        OkGo.<String>get(URL.DOMAIN_NAME_PROXY)
                 .client(mClient)
                 .execute(new StringCallback() {
 
@@ -72,9 +72,9 @@ public class Checker {
                         super.onFinish();
                         if (onProxyAvailableListener != null) {
                             onProxyAvailableListener.available(isAvailable);
-                       }
+                        }
                     }
-               });
+                });
     }
 
     public void checkProxy(OnProxyAvailableListener onProxyAvailableListener, String url) {
