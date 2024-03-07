@@ -756,7 +756,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
         if (Hawk.get(HawkConfig.IS_IGNORE_VERSION, false)) {LOG.i("已忽略更新");return;}
         // LOG.i("checkHasUpdate");
         Checker.getInstance().checkProxy(isAvailable -> {
-            String checkUrl = isAvailable ? URL.DOMAIN_NAME_PROXY + URL.GITHUB_VERSION_PATH : URL.GITHUB_VERSION_PATH;
+           // String checkUrl = isAvailable ? URL.DOMAIN_NAME_PROXY + URL.GITHUB_VERSION_PATH : URL.GITHUB_VERSION_PATH;
             StoreApiConfig.get().doGet(checkUrl, new StoreApiConfig.StoreApiConfigCallback() {
                 @Override
                 public void success(String json) {
@@ -792,8 +792,8 @@ public class ModelSettingFragment extends BaseLazyFragment {
     private void checkUpdate () {
         Hawk.put(HawkConfig.IS_IGNORE_VERSION, false);
         Checker.getInstance().checkProxy(isAvailable -> {
-            String checkUrl = isAvailable ? URL.DOMAIN_NAME_PROXY + URL.GITHUB_VERSION_PATH : URL.GITHUB_VERSION_PATH;
-            String apkUrl = isAvailable ? URL.DOMAIN_NAME_PROXY + URL.APK_PATH : URL.APK_PATH;
+           // String checkUrl = isAvailable ? URL.DOMAIN_NAME_PROXY + URL.GITHUB_VERSION_PATH : URL.GITHUB_VERSION_PATH;
+            //String apkUrl = isAvailable ? URL.DOMAIN_NAME_PROXY + URL.APK_PATH : URL.APK_PATH;
             XUpdate.newBuild(mContext)
                     .updateUrl(checkUrl)
                     .updateChecker(new CustomUpdateChecker(getActivity()))
