@@ -22,9 +22,7 @@ import me.jessyan.autosize.AutoSizeConfig;
 import me.jessyan.autosize.unit.Subunits;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.xuexiang.xupdate.entity.UpdateError.ERROR.CHECK_NO_NEW_VERSION;
 
@@ -111,7 +109,7 @@ public class App extends MultiDexApplication {
         putDefault(HawkConfig.IJK_CODEC, "硬解码");
         putDefault(HawkConfig.HOME_REC_STYLE, false);// 首页多行
 
-        putDefault(HawkConfig.PROXY_URL, "");
+        putDefault(HawkConfig.PROXY_URL, URL.DOMAIN_NAME_PROXY);
         // 默认换台反转
         putDefault(HawkConfig.LIVE_CHANNEL_REVERSE, true);
         // 默认显示时间
@@ -150,40 +148,35 @@ public class App extends MultiDexApplication {
     }
 
     private void putDefaultApis() {
-        //String url = "";
+        String url = URL.DOMAIN_NAME_PROXY;
 
         // 默认加速历史记录
-        //List<String> proxyUrlHistory = Hawk.get(HawkConfig.PROXY_URL_HISTORY, new ArrayList<>());
-        //proxyUrlHistory.add("");
-        //proxyUrlHistory.add("https://github.moeyy.xyz/");
-       //proxyUrlHistory.add("https://gh.ddlc.top/");
-        //proxyUrlHistory.add("https://ghps.cc/");
-       // proxyUrlHistory.add("https://raw.bunnylblbblbl.eu.org/");
-        // 默认线路地址
-        String defaultApiName = "默认线路";
-        String defaultApi = "https://agit.ai/wwz09/ubuntu/raw/branch/master/main.json";
+        List<String> proxyUrlHistory = Hawk.get(HawkConfig.PROXY_URL_HISTORY, new ArrayList<>());
+        proxyUrlHistory.add(url);
+        proxyUrlHistory.add("https://github.moeyy.xyz/");
+        proxyUrlHistory.add("https://gh.ddlc.top/");
+        proxyUrlHistory.add("https://ghps.cc/");
+        proxyUrlHistory.add("https://raw.bunnylblbblbl.eu.org/");
         // 默认仓库地址
         String defaultStoreApi = "https://agit.ai/wwz09/ubuntu/raw/branch/master/TXT/dc.json";
 
-        Map<String, String> defaultApiMap = Hawk.get(HawkConfig.API_MAP, new HashMap<>());
-        defaultApiMap.put(defaultApiName, defaultApi);
-
-        List<String> defaultApiHistory = Hawk.get(HawkConfig.API_NAME_HISTORY, new ArrayList<>());
-        defaultApiHistory.add(defaultApiName);
-
         // 不添加默认线路
-        putDefault(HawkConfig.API_URL, defaultApi);
-        putDefault(HawkConfig.API_NAME, defaultApiName);
+        // 默认线路地址
+        String defaultApiName = "默认线路";
+        String defaultApi = "https://agit.ai/wwz09/ubuntu/raw/branch/master/main.json";
+        // Map<String, String> defaultApiMap = Hawk.get(HawkConfig.API_MAP, new HashMap<>());
+        // defaultApiMap.put(defaultApiName, defaultApi);
+        // List<String> defaultApiHistory = Hawk.get(HawkConfig.API_NAME_HISTORY, new ArrayList<>());
+        // defaultApiHistory.add(defaultApiName);
+        // putDefault(HawkConfig.API_URL, defaultApi);
+        // putDefault(HawkConfig.API_NAME, defaultApiName);
         // putDefault(HawkConfig.API_NAME_HISTORY, defaultApiHistory);
         // putDefault(HawkConfig.API_MAP, defaultApiMap);
+        // 不添加默认直播源
+         putDefault(HawkConfig.LIVE_URL, url + URL.DEFAULT_LIVE_URL);
 
         putDefault(HawkConfig.DEFAULT_STORE_API, defaultStoreApi);
-        putDefault(HawkConfig.PLAY_TYPE, 1);
-        putDefault(HawkConfig.HOME_REC, 1);
-        // 默认渲染方式：推荐手机使用0-texture，电视1-surface
-        putDefault(HawkConfig.PLAY_RENDER, 1);
-        putDefault(HawkConfig.IJK_CODEC, "硬解码");
-        putDefault(HawkConfig.HOME_REC_STYLE, false);// 首页多行
+        putDefault(HawkConfig.PROXY_URL_HISTORY, proxyUrlHistory);
     }
 
     private void putDefault(String key, Object value) {
