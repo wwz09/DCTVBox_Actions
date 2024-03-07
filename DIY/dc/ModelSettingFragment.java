@@ -752,58 +752,58 @@ public class ModelSettingFragment extends BaseLazyFragment {
         findViewById(R.id.llClearCache).setOnClickListener((view -> onClickClearCache(view)));
     }
 
-    private void checkHasUpdate () {
-        if (Hawk.get(HawkConfig.IS_IGNORE_VERSION, false)) {LOG.i("已忽略更新");return;}
+    //private void checkHasUpdate () {
+       // if (Hawk.get(HawkConfig.IS_IGNORE_VERSION, false)) {LOG.i("已忽略更新");return;}
         // LOG.i("checkHasUpdate");
-        Checker.getInstance().checkProxy(isAvailable -> {
+        //Checker.getInstance().checkProxy(isAvailable -> {
            // String checkUrl = isAvailable ? URL.DOMAIN_NAME_PROXY + URL.GITHUB_VERSION_PATH : URL.GITHUB_VERSION_PATH;
-            StoreApiConfig.get().doGet(checkUrl, new StoreApiConfig.StoreApiConfigCallback() {
-                @Override
-                public void success(String json) {
-                    try {
-                        LOG.i(json);
-                        VersionInfoVo versionInfoVo = JsonUtil.fromJson(json, VersionInfoVo.class);
-                        if (versionInfoVo != null && versionInfoVo.getVersionCode() > UpdateUtils.getVersionCode(getContext())) {
-                            LOG.i(versionInfoVo.toString());
+           // StoreApiConfig.get().doGet(checkUrl, new StoreApiConfig.StoreApiConfigCallback() {
+              //  @Override
+               // public void success(String json) {
+                   // try {
+                     //   LOG.i(json);
+                     //   VersionInfoVo versionInfoVo = JsonUtil.fromJson(json, VersionInfoVo.class);
+                       // if (versionInfoVo != null && versionInfoVo.getVersionCode() > UpdateUtils.getVersionCode(getContext())) {
+                       //     LOG.i(versionInfoVo.toString());
                             // 有新版本
-                            Hawk.put(HawkConfig.VERSION_INFO_STR, json);
-                            notificationPoint.setVisibility(View.VISIBLE);
+                        //    Hawk.put(HawkConfig.VERSION_INFO_STR, json);
+                       //     notificationPoint.setVisibility(View.VISIBLE);
 
-                        } else {
+                     //   } else {
                             // 已是最新版本
-                            Hawk.put(HawkConfig.VERSION_INFO_STR, json);
-                            notificationPoint.setVisibility(View.GONE);
-                        }
-                    }
-                    catch (Exception e) {
-                        LOG.i(e.getMessage());
-                    }
-                }
+                       //     Hawk.put(HawkConfig.VERSION_INFO_STR, json);
+                      //      notificationPoint.setVisibility(View.GONE);
+                       // }
+                   // }
+                  //  catch (Exception e) {
+                 //       LOG.i(e.getMessage());
+               //     }
+             //   }
 
-                @Override
-                public void error(String msg) {
-                    Toast.makeText(mContext, "请求：" + checkUrl + "失败！", Toast.LENGTH_SHORT);
-                    Hawk.put(HawkConfig.VERSION_INFO_STR, "");
-                }
-            });
-        });
-    }
+             //   @Override
+             //   public void error(String msg) {
+              //      Toast.makeText(mContext, "请求：" + checkUrl + "失败！", Toast.LENGTH_SHORT);
+           //         Hawk.put(HawkConfig.VERSION_INFO_STR, "");
+             //   }
+          //  });
+       // });
+   // }
 
-    private void checkUpdate () {
-        Hawk.put(HawkConfig.IS_IGNORE_VERSION, false);
-        Checker.getInstance().checkProxy(isAvailable -> {
+  //  private void checkUpdate () {
+     //   Hawk.put(HawkConfig.IS_IGNORE_VERSION, false);
+     //   Checker.getInstance().checkProxy(isAvailable -> {
            // String checkUrl = isAvailable ? URL.DOMAIN_NAME_PROXY + URL.GITHUB_VERSION_PATH : URL.GITHUB_VERSION_PATH;
             //String apkUrl = isAvailable ? URL.DOMAIN_NAME_PROXY + URL.APK_PATH : URL.APK_PATH;
-            XUpdate.newBuild(mContext)
-                    .updateUrl(checkUrl)
-                    .updateChecker(new CustomUpdateChecker(getActivity()))
-                    .updateParser(new CustomUpdateParser(mContext, apkUrl))
-                    .updatePrompter(new CustomUpdatePrompter())
+        //    XUpdate.newBuild(mContext)
+              //      .updateUrl(checkUrl)
+                //    .updateChecker(new CustomUpdateChecker(getActivity()))
+                //    .updateParser(new CustomUpdateParser(mContext, apkUrl))
+               //     .updatePrompter(new CustomUpdatePrompter())
                     // .updateDownLoader(new CustomUpdateDownloader())
-                    .updateHttpService(new OkGoUpdateHttpService())
-                    .update();
-        });
-    }
+                //    .updateHttpService(new OkGoUpdateHttpService())
+               //     .update();
+   //     });
+ //   }
 
     private void onClickIjkCachePlay(View v) {
         FastClickCheckUtil.check(v);
