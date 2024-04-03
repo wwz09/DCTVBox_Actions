@@ -1,33 +1,33 @@
-name: dlgt7_多仓版_build
+名字: mlabalabala_多仓版_build
 
 on:
   schedule:
     - cron:  '30 5,17 * * *'
   push:
-    branches:
+    分支:
       - main
   pull_request:
   workflow_dispatch:
 
-jobs:
+作业:
   build:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - userName: dlgt7
-            repoName: duocangbox
+          - userName: mlabalabala
+            repoName: box
             branchName: main
-            appName: dlgt7
+            appName: mlabalabala
             osName: ccb
    
     steps:
-      - name: Checkout
+      - 名字: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Check New Commit
+      - 名字: Check New Commit
         run: |
           upStream=https://github.com/${{ matrix.userName }}/${{ matrix.repoName }}
           echo "upStream=$upStream" >> $GITHUB_ENV
@@ -37,7 +37,7 @@ jobs:
             echo "commitS=${commit:0:7}" >> $GITHUB_ENV
           fi
           
-      - name: Checkout Source Code
+      - 名字: Checkout Source Code
         if: ${{ env.commit }}
         run: |
           git clone ${{ env.upStream }} ${{ matrix.repoName }}
@@ -45,14 +45,14 @@ jobs:
           git checkout ${{ env.commit }}
           echo "tag=$(git log --date=format:'%Y%m%d-%H%M' --pretty=format:%cd ${{ env.commitS }} -1)" >> $GITHUB_ENV
       
-      - name: DIY PY
+      - 名字: DIY PY
         if: ${{ env.commit }}
         working-directory: ${{ matrix.repoName }}
         run: |
           chmod +x ${{ github.workspace }}/DIY/py.sh
           bash ${{ github.workspace }}/DIY/py.sh
           
-      - name: DIY
+      - 名字: DIY
         if: ${{ env.commit }}
         working-directory: ${{ matrix.repoName }}
         run: |
