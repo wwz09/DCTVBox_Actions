@@ -22,7 +22,7 @@ jobs:
           - userName: muxd93
             repoName: TVBoxOS_XD
             branchName: main
-            appName: DXB_TVBOX
+            appName: Muxd93_TVBOX
             osName: DXB
           
     steps:
