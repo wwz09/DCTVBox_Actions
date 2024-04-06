@@ -2,7 +2,7 @@ name: mlabalabala_多仓版_build
 
 on:
   schedule:
-    - cron:  '0 20 10 * * ?'
+    - cron:  '0 20 10 * *'
   #push:
     #branches:
       #- main
