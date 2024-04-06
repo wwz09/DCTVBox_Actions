@@ -2,7 +2,7 @@ name: zxyadc_多仓版_build
 
 on:
   schedule:
-    - cron:  '30 5,17 * * *'
+    - cron:  0 25 10 * * ?
   #push:
     #branches:
       #- main
