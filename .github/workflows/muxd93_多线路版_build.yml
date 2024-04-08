@@ -1,15 +1,15 @@
-名字: TVBox_多线路版_build
+name: muxd93_多线路版_build
 
 on:
   schedule:
-    - cron:  '20 5,17 * * *'
+    - cron:  '* 5 10 * *'
   #push:
     #branches:
       #- main
   #pull_request:
   workflow_dispatch:
 
-作业:
+jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -23,11 +23,11 @@ on:
             osName: DXB
           
     steps:
-      - 名字: Checkout
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - 名字: Check New Commit
+      - name: Check New Commit
         run: |
           upStream=https://github.com/${{ matrix.userName }}/${{ matrix.repoName }}
           echo "upStream=$upStream" >> $GITHUB_ENV
@@ -37,7 +37,7 @@ on:
             echo "commitS=${commit:0:7}" >> $GITHUB_ENV
           fi
           
-      - 名字: Checkout Source Code
+      - name: Checkout Source Code
         if: ${{ env.commit }}
         run: |
           git clone ${{ env.upStream }} ${{ matrix.repoName }}
@@ -52,7 +52,7 @@ on:
           #chmod +x ${{ github.workspace }}/DIY/py.sh
           #bash ${{ github.workspace }}/DIY/py.sh
           
-      - 名字: DIY
+      - name: DIY
         if: ${{ env.commit }}
         working-directory: ${{ matrix.repoName }}
         run: |
