@@ -1,4 +1,4 @@
-name: TVBox_多线路版_build
+名字: TVBox_多线路版_build
 
 on:
   schedule:
@@ -9,7 +9,7 @@ on:
   #pull_request:
   workflow_dispatch:
 
-jobs:
+作业:
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -23,11 +23,11 @@ jobs:
             osName: DXB
           
     steps:
-      - name: Checkout
+      - 名字: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Check New Commit
+      - 名字: Check New Commit
         run: |
           upStream=https://github.com/${{ matrix.userName }}/${{ matrix.repoName }}
           echo "upStream=$upStream" >> $GITHUB_ENV
@@ -37,7 +37,7 @@ jobs:
             echo "commitS=${commit:0:7}" >> $GITHUB_ENV
           fi
           
-      - name: Checkout Source Code
+      - 名字: Checkout Source Code
         if: ${{ env.commit }}
         run: |
           git clone ${{ env.upStream }} ${{ matrix.repoName }}
@@ -52,7 +52,7 @@ jobs:
           #chmod +x ${{ github.workspace }}/DIY/py.sh
           #bash ${{ github.workspace }}/DIY/py.sh
           
-      - name: DIY
+      - 名字: DIY
         if: ${{ env.commit }}
         working-directory: ${{ matrix.repoName }}
         run: |
