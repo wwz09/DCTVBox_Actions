@@ -2,7 +2,7 @@ name: crewray_多仓版_build
 
 on:
   schedule:
-    - cron:  '0 10 10 * *'
+    - cron:  '10 5,17 * * *'
   #push:
     #branches:
       #- main
