@@ -2,7 +2,7 @@ name: TVBox_多线路版_build
 
 on:
   schedule:
-    - cron:  '* 5 10 * *'
+    - cron:  '20 5,17 * * *'
   #push:
     #branches:
       #- main
