@@ -12,7 +12,7 @@
 - [crewray/tvbox](https://github.com/crewray/tvbox)
 - [mlabalabala/box](https://github.com/mlabalabala/box)
 - [muxd93/TVBoxOS_XD](https://github.com/muxd93/TVBoxOS_XD)
-- [zxyadc/b-box](https://github.com/zxyadc/b-box）
+- [zxyadc/b-box](https://github.com/zxyadc/b-box)
 
 ---
 #### 数据源参考
