@@ -72,5 +72,4 @@ TVBox 简易修改 多源版本 支持安卓4.4
       ```
 
 - [自建仓库](https://raw.githubusercontent.com/mlabalabala/TVResource/main/boxCfg/default) (需要魔砝，或者自己根据加速站拼接URL)
-### 测试可能不太够，有BUG请提issue
 ### Actions中有生成脚本
