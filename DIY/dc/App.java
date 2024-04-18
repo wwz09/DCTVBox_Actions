@@ -161,9 +161,9 @@ public class App extends MultiDexApplication {
        // proxyUrlHistory.add("https://raw.bunnylblbblbl.eu.org/");
         // 默认线路地址
         String defaultApiName = "默认线路";
-        String defaultApi = "https://agit.ai/wwz09/ubuntu/raw/branch/master/main.json";
+        String defaultApi = "https://ghproxy.net/https://raw.githubusercontent.com/wwz09/ubuntu/main/main.json";
         // 默认仓库地址
-        String defaultStoreApi = "https://agit.ai/wwz09/ubuntu/raw/branch/master/TXT/dc.json";
+        String defaultStoreApi = "https://ghproxy.net/https://raw.githubusercontent.com/wwz09/ubuntu/main/TXT/dc.json";
 
         Map<String, String> defaultApiMap = Hawk.get(HawkConfig.API_MAP, new HashMap<>());
         defaultApiMap.put(defaultApiName, defaultApi);
