@@ -45,12 +45,12 @@ jobs:
           git checkout ${{ env.commit }}
           echo "tag=$(git log --date=format:'%Y%m%d-%H%M' --pretty=format:%cd ${{ env.commitS }} -1)" >> $GITHUB_ENV
       
-      - name: DIY PY
-        if: ${{ env.commit }}
-        working-directory: ${{ matrix.repoName }}
-        run: |
-          chmod +x ${{ github.workspace }}/DIY/py.sh
-          bash ${{ github.workspace }}/DIY/py.sh
+      #- name: DIY PY
+        #if: ${{ env.commit }}
+        #working-directory: ${{ matrix.repoName }}
+        #run: |
+          #chmod +x ${{ github.workspace }}/DIY/py.sh
+          #bash ${{ github.workspace }}/DIY/py.sh
           
       - name: DIY
         if: ${{ env.commit }}
@@ -61,8 +61,7 @@ jobs:
           cp -rf $GITHUB_WORKSPACE/DIY/png/图标5.png app/src/main/res/drawable-xhdpi/app_icon.png
           cp -rf $GITHUB_WORKSPACE/DIY/png/图标5.png app/src/main/res/drawable-xxhdpi/app_icon.png
           cp -rf $GITHUB_WORKSPACE/DIY/png/图标5.png app/src/main/res/drawable-xxxhdpi/app_icon.png
-          cp -rf $GITHUB_WORKSPACE/DIY/png/app_bg.png app/src/main/res/drawable/app_bg.png  
-          sed -i 's%com.github.tvbox.osc.xd%com.github.tvbox.osc.${{ matrix.osName }}%g' app/build.gradle
+          cp -rf $GITHUB_WORKSPACE/DIY/png/app_bg.png app/src/main/res/drawable/app_bg.png
           sed -i 's%TVBox%源源影视%g' app/src/main/res/values/strings.xml
           sed -i 's%TVBox%源源影视%g' app/src/main/res/values-zh/strings.xml 
           sed -i 's%Hawk.put(HawkConfig.PLAY_TYPE, 1);%Hawk.put(HawkConfig.HOME_REC, 0);       // Home Rec 0=豆瓣, 1=推荐, 2=历史\n Hawk.put(HawkConfig.PLAY_TYPE, 1);      // Player   0=系统, 1=IJK, 2=Exo\n Hawk.put(HawkConfig.IJK_CODEC, "硬解码"); // IJK Render 软解码, 硬解码\n%g' app/src/main/java/com/github/tvbox/osc/base/App.java
