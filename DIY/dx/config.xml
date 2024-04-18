@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_epg_url" translatable="false">"https://epg.112114.xyz/" </string>/>
-    <string name="app_source" translatable="false">https://agit.ai/wwz09/ubuntu/raw/branch/master/main.json</string>
+    <string name="app_source" translatable="false">https://ghproxy.net/https://raw.githubusercontent.com/wwz09/ubuntu/main/main.json</string>
 
     <string-array name="default_api_history" translatable="false">
         <item>https://ghproxy.net/https://raw.githubusercontent.com/wwz09/ubuntu/main/main.json</item>
