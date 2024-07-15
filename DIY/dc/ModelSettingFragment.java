@@ -116,12 +116,12 @@ public class ModelSettingFragment extends BaseLazyFragment {
         tvPlay.setText(PlayerHelper.getPlayerName(Hawk.get(HawkConfig.PLAY_TYPE, 0)));
         tvRender.setText(PlayerHelper.getRenderName(Hawk.get(HawkConfig.PLAY_RENDER, 0)));
         tvIjkCachePlay.setText(Hawk.get(HawkConfig.IJK_CACHE_PLAY, false) ? "开启" : "关闭");
-        //checkHasUpdate();
-        //findViewById(R.id.llCheckUpdate).setOnClickListener( v -> {
-            //Toast.makeText(mActivity, "检查更新中...", Toast.LENGTH_SHORT).show();
-            //checkUpdate();
-            //notificationPoint.setVisibility(View.GONE);
-        //});
+        checkHasUpdate();
+        findViewById(R.id.llCheckUpdate).setOnClickListener( v -> {
+            Toast.makeText(mActivity, "检查更新中...", Toast.LENGTH_SHORT).show();
+            checkUpdate();
+            notificationPoint.setVisibility(View.GONE);
+        });
         findViewById(R.id.llDebug).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,7 +275,10 @@ public class ModelSettingFragment extends BaseLazyFragment {
                 ApiDialog dialog = new ApiDialog(mActivity);
                 EventBus.getDefault().register(dialog);
                 dialog.setOnListener(url -> {
-                    tvHomeApi.setText(url);
+                    if (-1 != url.indexOf("api-")) {
+                        url = url.replaceAll("api-", "");
+                        tvHomeApi.setText(url);
+                    }
 //                        tvApi.setText(api);
                 });
                 dialog.setOnDismissListener(dialog1 -> {
@@ -751,7 +754,7 @@ public class ModelSettingFragment extends BaseLazyFragment {
         findViewById(R.id.llIjkCachePlay).setOnClickListener((view -> onClickIjkCachePlay(view)));
         findViewById(R.id.llClearCache).setOnClickListener((view -> onClickClearCache(view)));
     }
-
+    
     //private void checkHasUpdate () {
        // if (Hawk.get(HawkConfig.IS_IGNORE_VERSION, false)) {LOG.i("已忽略更新");return;}
         // LOG.i("checkHasUpdate");
@@ -805,6 +808,11 @@ public class ModelSettingFragment extends BaseLazyFragment {
    //     });
  //   }
 
+    private void onClickIjkCachePlay(View v) {
+        FastClickCheckUtil.check(v);
+        Hawk.put(HawkConfig.IJK_CACHE_PLAY, !Hawk.get(HawkConfig.IJK_CACHE_PLAY, false));
+        tvIjkCachePlay.setText(Hawk.get(HawkConfig.IJK_CACHE_PLAY, false) ? "开启" : "关闭");
+    }
     private void onClickIjkCachePlay(View v) {
         FastClickCheckUtil.check(v);
         Hawk.put(HawkConfig.IJK_CACHE_PLAY, !Hawk.get(HawkConfig.IJK_CACHE_PLAY, false));
