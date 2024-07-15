@@ -116,12 +116,12 @@ public class ModelSettingFragment extends BaseLazyFragment {
         tvPlay.setText(PlayerHelper.getPlayerName(Hawk.get(HawkConfig.PLAY_TYPE, 0)));
         tvRender.setText(PlayerHelper.getRenderName(Hawk.get(HawkConfig.PLAY_RENDER, 0)));
         tvIjkCachePlay.setText(Hawk.get(HawkConfig.IJK_CACHE_PLAY, false) ? "开启" : "关闭");
-        checkHasUpdate();
-        findViewById(R.id.llCheckUpdate).setOnClickListener( v -> {
-            Toast.makeText(mActivity, "检查更新中...", Toast.LENGTH_SHORT).show();
-            checkUpdate();
-            notificationPoint.setVisibility(View.GONE);
-        });
+        //checkHasUpdate();
+        //findViewById(R.id.llCheckUpdate).setOnClickListener( v -> {
+           // Toast.makeText(mActivity, "检查更新中...", Toast.LENGTH_SHORT).show();
+           // checkUpdate();
+          //  notificationPoint.setVisibility(View.GONE);
+      //  });
         findViewById(R.id.llDebug).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -813,11 +813,11 @@ public class ModelSettingFragment extends BaseLazyFragment {
         Hawk.put(HawkConfig.IJK_CACHE_PLAY, !Hawk.get(HawkConfig.IJK_CACHE_PLAY, false));
         tvIjkCachePlay.setText(Hawk.get(HawkConfig.IJK_CACHE_PLAY, false) ? "开启" : "关闭");
     }
-    private void onClickIjkCachePlay(View v) {
-        FastClickCheckUtil.check(v);
-        Hawk.put(HawkConfig.IJK_CACHE_PLAY, !Hawk.get(HawkConfig.IJK_CACHE_PLAY, false));
-        tvIjkCachePlay.setText(Hawk.get(HawkConfig.IJK_CACHE_PLAY, false) ? "开启" : "关闭");
-    }
+   // private void onClickIjkCachePlay(View v) {
+     //   FastClickCheckUtil.check(v);
+      //  Hawk.put(HawkConfig.IJK_CACHE_PLAY, !Hawk.get(HawkConfig.IJK_CACHE_PLAY, false));
+      //  tvIjkCachePlay.setText(Hawk.get(HawkConfig.IJK_CACHE_PLAY, false) ? "开启" : "关闭");
+  //  }
 
     private void onClickClearCache(View v) {
         FastClickCheckUtil.check(v);
