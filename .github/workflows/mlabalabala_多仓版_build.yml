@@ -149,7 +149,7 @@ jobs:
         run: |
           echo "commit=" >> $GITHUB_ENV
           
-      - name: Release and Upload Assets
+      - name: Release 和 Upload Assets
         uses: ncipollo/release-action@v1
         if: ${{ env.commit }}
         with:
@@ -159,12 +159,6 @@ jobs:
           removeArtifacts: true
           artifacts: |
             ${{ matrix.repoName }}/apk/*.apk
-
-        clean:
-          needs: build
-          runs-on: ubuntu-latest
-          steps:
-      
             
       - name: 删除过时工作流程
         uses: Mattraks/delete-workflow-runs@main
