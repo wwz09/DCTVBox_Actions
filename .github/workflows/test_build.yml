@@ -8,6 +8,15 @@ on:
       #- main
   #pull_request:
   workflow_dispatch:
+    inputs:
+      rebuild:
+        description: '忽略构建记录以重新构建'
+        required: false
+        type: boolean
+      donotpublish:
+        description: '构建后不提交发布新版'
+        required: false
+        type: boolean
 
 jobs:
   build:
@@ -37,7 +46,7 @@ jobs:
             echo "commitS=${commit:0:7}" >> $GITHUB_ENV
           fi
           
-      - name: Checkout Source Code and Zip
+      - name: Checkout Source Code 和 Zip
         if: ${{ env.commit }}
         run: |
           git clone ${{ env.upStream }} ${{ matrix.repoName }}
@@ -111,7 +120,7 @@ jobs:
           path: ${{ matrix.repoName }}/apk/*
 
           
-      - name: Release and Upload Assets(release area)
+      - name: Release 和 Upload Assets(release area)
         uses: softprops/action-gh-release@v1
         if: ${{ env.commit }}
         with:
