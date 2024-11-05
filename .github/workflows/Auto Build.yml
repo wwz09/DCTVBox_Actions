@@ -1,24 +1,13 @@
 name: Auto Build
 
 on:
-  #schedule:
-    #- cron: 59 */8 * * *
   workflow_dispatch:
-    inputs:
-      rebuild:
-        description: '忽略构建记录以重新构建'
-        required: false
-        type: boolean
-      donotpublish:
-        description: '构建后不提交发布新版'
-        required: false
-        type: boolean
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         include:
           - userName: q215613905
@@ -167,7 +156,7 @@ jobs:
         run: |
           echo "commit=" >> $GITHUB_ENV
           
-      - name: Release and Upload Assets
+      - name: Release 和 Upload Assets
         uses: ncipollo/release-action@v1
         if: ${{ env.commit }}
         with:
