@@ -143,7 +143,7 @@ jobs:
         run: |
           echo "commit=" >> $GITHUB_ENV
 
-      - name: Release and Upload Assets
+      - name: Release 和 Upload Assets
         uses: ncipollo/release-action@main
         if: ${{ env.commit }}
         with:
@@ -188,5 +188,4 @@ jobs:
       with:
         retain_days: 1
         keep_minimum_runs: 3
-          retain_days: 14
-          keep_minimum_runs: 10
+
