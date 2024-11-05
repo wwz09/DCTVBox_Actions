@@ -31,7 +31,8 @@ jobs:
           - userName: takagen99
             repoName: Box
             branchName: main
-            #java_ver: 17
+            jdkVersion: 11
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,6 +47,7 @@ jobs:
             echo "commit=$commit" >> $GITHUB_ENV
             echo "commitS=${commit:0:7}" >> $GITHUB_ENV
           fi
+
       - name: Checkout Source Code
         if: ${{ env.commit }}
         run: |
@@ -53,42 +55,25 @@ jobs:
           cd TVBoxOSC
           git checkout ${{ env.commit }}
           echo "tag=$(git log --date=format:'%Y%m%d-%H%M' --pretty=format:%cd ${{ env.commitS }} -1)" >> $GITHUB_ENV
+
       - name: Extra Modify
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
         run: |
-          echo '修改VersionName'
-          if [ "${{ matrix.userName }}" == "Klosw" ]; then
-            # 进行 sed 修改
-            sed -i 's/\.concat(buildTime())/ +\"${{ env.tag }}\"/g' app/build.gradle 
-            find app/src/main/res/ -name "strings.xml" -exec sed -i 's/CatVodTVOfficial\/TVBoxOSC/Klosw\/BuildTVBoxOSC/g' {} +
-            sed -i 's/o0HalfLife0o\/TVBoxOSC/Klosw\/BuildTVBoxOSC/g' app/src/main/java/com/github/tvbox/osc/util/Github.java
-            sed -i 's/takagen99/Klosw/g' app/src/main/java/com/github/tvbox/osc/util/Github.java
-          else
-             sed -i "/versionName/s#[0-9a-zA-Z_\.\'\"-]\+\$#\'${{ env.tag }}\'#" app/build.gradle
-             sed -i "/android:text=/s#=\"#=\"${{ env.tag }}\\\\n\\\\n#" app/src/main/res/layout/dialog_about.xml
-          fi 
-       
-          
           echo 'crosswalk源，防挂'
           if grep -q 'crosswalk' build.gradle; then
             sed -i "/crosswalk/a\        maven { url 'https://o0halflife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }" build.gradle
           else
             sed -i "/jitpack.io/a\        maven { url 'https://o0halflife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }" build.gradle
           fi
+
       - name: Compress Source Code
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
         run: |
           #zip -q -x ".git/*" -x  ".github/*" -r source-${{ env.commitS }}.zip .
           tar -cJf source-${{ env.commitS }}.tar.xz --exclude=.git --exclude=.github *
-      - name: Option For Test
-        if: ${{ inputs.testOption }}
-        working-directory: TVBoxOSC
-        run: |
-          #添加arm64支持，不支持ijk解码
-          sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" app/build.gradle
-          sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" player/build.gradle
+
       - name: Release Apk Sign
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
@@ -103,52 +88,40 @@ jobs:
           sed -i '$a\RELEASE_KEY_ALIAS=TVBoxOSC'            ./gradle.properties
           sed -i '$a\RELEASE_STORE_PASSWORD=TVBoxOSC'       ./gradle.properties
           sed -i '$a\RELEASE_KEY_PASSWORD=TVBoxOSC'         ./gradle.properties
-      - name: Check JAVA Version
+
+      - name: Setup JDK
         if: ${{ env.commit }}
-        working-directory: TVBoxOSC
-        run: |
-          setup_java_ver=$(grep -o 'JavaVersion.VERSION_[0-9_]\+' app/build.gradle |head -1 |sed 's/.*_//')
-          if [ $setup_java_ver -gt 11 ]; then
-            echo "setup_java_ver=$setup_java_ver" >> $GITHUB_ENV
-          else
-            echo "setup_java_ver=17" >> $GITHUB_ENV
-          fi
-      - uses: actions/setup-java@v4
-        if: ${{ env.setup_java_ver }}
+        uses: actions/setup-java@main
         with:
-          distribution: temurin
-          java-version: ${{ env.setup_java_ver }}
-      - uses: gradle/gradle-build-action@v3
+          distribution: 'temurin'
+          java-version: ${{ matrix.jdkVersion }}
+
+      - name: Setup Gradle
         if: ${{ env.commit }}
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Build With Gradle
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
         run: |
           chmod +x gradlew
           ./gradlew assemblerelease --build-cache --parallel --daemon --warning-mode all
+
       - name: Prepare App
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
         run: |
           rm -rf apk/
           mkdir -p apk/
-          for file in `find ~ -name "*release*.apk" -print`; do
-            # 获取文件的基本名称
-            base=$(basename "$file")
-            # 如果文件是 TVBox_ 开头
-            if [[ "$base" == TVBox_* ]]; then
-              new_base=$(echo "$base" | sed "s/release/${{ matrix.userName }}_${{ env.tag }}/")
-            else
-              new_base="TVBox_${{ matrix.userName }}_${{ env.tag }}.apk"
-            fi
-            # 移动并重命名文件
-            mv "$file" "apk/$new_base"
+          find ~ -type d -iname "release" -print0 | while IFS= read -r -d '' dir; do
+            find "$dir" -type f -name "*.apk" -exec sh -c 'cp "$1" "apk/${{ matrix.userName }}-${{ matrix.repoName }}-${{ matrix.branchName }}-${1##*/}"' sh {} \;
           done
+
       - name: Release Note
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
         run: |
-          lastCommit=$(grep "${{ matrix.userName }}\/${{ matrix.repoName }}" ${{ github.workspace }}/README.md |grep -o '[a-z0-9]\{40\}')
+          lastCommit=$(grep "${{ matrix.userName }}\/${{ matrix.repoName }}\/${{ matrix.branchName }}" ${{ github.workspace }}/README.md |grep -o '[a-z0-9]\{40\}')
           export LESSCHARSET=utf-8
           echo -e "Credit: [${{ matrix.userName }}](${{ env.upStream }})\nCommit: ${{ env.commit }}\nChangelog:" > apk/${{ matrix.userName }}-Release.log
           if [ "${{ env.commit }}" == "${lastCommit}" ]; then
@@ -156,29 +129,41 @@ jobs:
           else
             git log --pretty=format:%B ${{ env.commitS }}...${lastCommit:0:7} |sed -e "s# \{2,\}#\n#g" -e "/^Merge \(pull\|branch\|remote\)/d" -e '/^$/d' |cat -n |sort -k2,2 -k1,1n |uniq -f1 |sort -k1,1n |cut -f2- >> apk/${{ matrix.userName }}-Release.log
           fi
+
       - name: Upload App To Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ env.commit }}
         with:
-          name: ${{ matrix.userName }}-${{ matrix.repoName }}
+          name: ${{ matrix.userName }}-${{ matrix.repoName }}-${{ matrix.branchName }}
           path: |
             TVBoxOSC/apk/*
+
       - name: Whether Or Not to Publish
         if: ${{ inputs.donotpublish && env.commit }}
         run: |
           echo "commit=" >> $GITHUB_ENV
+
       - name: Release and Upload Assets
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@main
         if: ${{ env.commit }}
         with:
-          name: ${{ env.tag }}
-          tag: ${{ env.tag }}
+          name: ${{ matrix.userName }}_${{ matrix.repoName }}_${{ matrix.branchName }}_${{ env.tag }}
+          tag: ${{ matrix.userName }}_${{ matrix.repoName }}_${{ matrix.branchName }}_${{ env.tag }}
           bodyFile: TVBoxOSC/apk/${{ matrix.userName }}-Release.log
           allowUpdates: true
           removeArtifacts: true
           artifacts: |
             TVBoxOSC/apk/*.apk
             TVBoxOSC/source-${{ env.commitS }}.*
+
+      - uses: dev-drprasad/delete-older-releases@master
+        with:
+          keep_latest: 5
+          delete_tags: true
+          delete_tag_pattern: ${{ matrix.userName }}_${{ matrix.repoName }}_${{ matrix.branchName }}.*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Push to master
         if: ${{ env.commit }}
         run: |
@@ -188,7 +173,8 @@ jobs:
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote set-url --add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
           git pull --rebase
-          sed -i "/${{ matrix.userName }}\/${{ matrix.repoName }}/s#Updated: [a-zA-Z0-9]*#Updated: ${{ env.commit }}#" README.md
+          sed -i "/${{ matrix.userName }}\/${{ matrix.repoName }}\/${{ matrix.branchName }}/s#Updated: [a-zA-Z0-9]*#Updated: ${{ env.commit }}#" README.md
+          sed -i "s/update at .*/update at $(date '+%Y-%m-%d %H:%M:%S')/" README.md
           git add --all
           git commit -m "${{ env.commit }}"
           git push -u -f origin master
@@ -197,10 +183,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Delete older workflow runs and artifacts
-        uses: Mattraks/delete-workflow-runs@main
-        with:
-          token: ${{ github.token }}
-          repository: ${{ github.repository }}
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
           retain_days: 14
           keep_minimum_runs: 10
