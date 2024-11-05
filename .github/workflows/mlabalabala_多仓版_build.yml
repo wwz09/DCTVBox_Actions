@@ -1,8 +1,8 @@
 name: mlabalabala_多仓版_build
 
 on:
-  schedule:
-    - cron:  '15 5,17 * * *'
+  #schedule:
+    #- cron:  '15 5,17 * * *'
   #push:
     #branches:
       #- main
