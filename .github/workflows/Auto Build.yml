@@ -179,13 +179,11 @@ jobs:
           git commit -m "${{ env.commit }}"
           git push -u -f origin master
 
-  clean:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Delete workflow runs
-      uses: GitRML/delete-workflow-runs@main
-      with:
-        retain_days: 1
-        keep_minimum_runs: 3
+      - name: 删除过时工作流程
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 1
+          keep_minimum_runs: 2
 
