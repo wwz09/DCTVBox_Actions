@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - userName: q215613905
@@ -31,7 +31,7 @@ jobs:
           - userName: takagen99
             repoName: Box
             branchName: main
-            java_ver: 17
+            #java_ver: 17
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,6 +46,13 @@ jobs:
             echo "commit=$commit" >> $GITHUB_ENV
             echo "commitS=${commit:0:7}" >> $GITHUB_ENV
           fi
+          
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+          # 用 1.8 版本覆盖环境中自带的 Java 11 版本
+          
       - name: Checkout Source Code
         if: ${{ env.commit }}
         run: |
@@ -53,32 +60,27 @@ jobs:
           cd ${{ matrix.repoName }}
           git checkout ${{ env.commit }}
           echo "tag=$(git log --date=format:'%Y%m%d-%H%M' --pretty=format:%cd ${{ env.commitS }} -1)" >> $GITHUB_ENV
+          
       - name: Extra Modify
         if: ${{ env.commit }}
         working-directory: ${{ matrix.repoName }}
         run: |
           echo '修改VersionName'
-          if [ "${{ matrix.userName }}" == "takagen99" ]; then
-            # 进行 sed 修改
-            sed -i 's/\.concat(buildTime())/ +\"${{ env.tag }}\"/g' app/build.gradle 
-            # 目前关于页面没有合并我的分支
-            sed -i "/android:text=/s#=\"#=\"${{ env.tag }}\\\\n\\\\n#" app/src/main/res/layout/dialog_about.xml
-          else
-             sed -i "/versionName/s#[0-9a-zA-Z_\.\'\"-]\+\$#\'${{ env.tag }}\'#" app/build.gradle
-             sed -i "/android:text=/s#=\"#=\"${{ env.tag }}\\\\n\\\\n#" app/src/main/res/layout/dialog_about.xml
-          fi 
+          sed -i "/versionName/s#[0-9a-zA-Z_\.\'\"-]\+\$#\'${{ env.tag }}\'#" app/build.gradle
+          sed -i "/android:text=/s#=\"#=\"${{ env.tag }}\\\\n\\\\n#" app/src/main/res/layout/dialog_about.xml
           echo 'crosswalk源，防挂'
           if grep -q 'crosswalk' build.gradle; then
             sed -i "/crosswalk/a\        maven { url 'https://o0halflife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }" build.gradle
           else
             sed -i "/jitpack.io/a\        maven { url 'https://o0halflife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }" build.gradle
           fi
-      - name: Compress Source Code
-        if: ${{ env.commit }}
+      - name: Option For Test
+        if: ${{ inputs.testOption }}
         working-directory: ${{ matrix.repoName }}
         run: |
-          #zip -q -x ".git/*" -x  ".github/*" -r sourceCode-${{ env.commitS }}.zip .
-          tar -cJf sourceCode-${{ env.commitS }}.tar.xz --exclude=.git --exclude=.github *
+          #添加arm64支持，不支持ijk解码
+          sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" app/build.gradle
+          sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" player/build.gradle
       - name: Release Apk Sign
         if: ${{ env.commit }}
         working-directory: ${{ matrix.repoName }}
@@ -93,14 +95,10 @@ jobs:
           sed -i '$a\RELEASE_KEY_ALIAS=TVBoxOSC'            ./gradle.properties
           sed -i '$a\RELEASE_STORE_PASSWORD=TVBoxOSC'       ./gradle.properties
           sed -i '$a\RELEASE_KEY_PASSWORD=TVBoxOSC'         ./gradle.properties
-      - uses: actions/setup-java@v4
-        if: ${{ matrix.java_ver }}
-        with:
-          distribution: temurin
-          java-version: ${{ matrix.java_ver }}
           
-      - uses: gradle/actions/setup-gradle@v4
+      - name: Setup Gradle
         if: ${{ env.commit }}
+        uses: gradle/gradle-build-action@v2
         
       - name: Build With Gradle
         if: ${{ env.commit }}
@@ -108,91 +106,53 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assemblerelease --build-cache --parallel --daemon --warning-mode all
-          
+      
       - name: Prepare App
         if: ${{ env.commit }}
         working-directory: ${{ matrix.repoName }}
         run: |
           rm -rf apk/
           mkdir -p apk/
-          for file in `find ~ -name "*release*.apk" -print`; do
-            # 获取文件的基本名称
-            base=$(basename "$file")
-            # 如果文件是 TVBox_ 开头
-            if [[ "$base" == TVBox_* ]]; then
-              new_base=$(echo "$base" | sed "s/release/${{ matrix.userName }}_${{ env.tag }}/")
-            else
-              new_base="TVBox_${{ matrix.userName }}_${{ env.tag }}.apk"
-            fi
-            # 移动并重命名文件
-            mv "$file" "apk/$new_base"
+          for file in `find ~ -name "*.apk" -print`; do
+            mv "$file" apk/${{ matrix.repoName }}_${{ env.tag }}.apk
           done
-          mv sourceCode-${{ env.commitS }}.* apk/
-          
-      #- name: Release Note
-        #if: ${{ env.commit }}
-       # working-directory: TVBoxOSC
-        #run: |
-         # lastCommit=$(grep "${{ matrix.userName }}\/${{ matrix.repoName }}" ${{ github.workspace }}/README.md |grep -o '[a-z0-9]\{40\}')
-         # export LESSCHARSET=utf-8
-         # echo -e "Credit: [${{ matrix.userName }}](${{ env.upStream }})\nCommit: ${{ env.commit }}\nChangelog:\n\`\`\`" > apk/${{ matrix.userName }}-Release.log
-         # if [ "${{ env.commit }}" == "${lastCommit}" ]; then
-         #   git log --pretty=format:%B ${{ env.commitS }} -1 |sed -e "s# \{2,\}#\n#g" -e "/^Merge \(pull\|branch\|remote\)/d" -e '/^$/d' |cat -n |sort -k2,2 -k1,1n |uniq -f1 |sort -k1,1n |cut -f2- >> apk/${{ matrix.userName }}-Release.log
-         # else
-         #   git log --pretty=format:%B ${{ env.commitS }}...${lastCommit:0:7} |sed -e "s# \{2,\}#\n#g" -e "/^Merge \(pull\|branch\|remote\)/d" -e '/^$/d' |cat -n |sort -k2,2 -k1,1n |uniq -f1 |sort -k1,1n |cut -f2- >> apk/${{ matrix.userName }}-Release.log
-         # fi
-        #  echo -e '\n```' >> apk/${{ matrix.userName }}-Release.log
-          
+      
       - name: Upload App To Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: ${{ env.commit }}
         with:
-          name: ${{ matrix.userName }}-${{ matrix.repoName }}
-          path: |
-            ${{ matrix.repoName }}/apk/*
-            
+          name: ${{ matrix.repoName }}
+          path: ${{ matrix.repoName }}/apk/*
+       
       - name: Whether Or Not to Publish
         if: ${{ inputs.donotpublish && env.commit }}
         run: |
           echo "commit=" >> $GITHUB_ENV
           
-      - name: Release 和 Upload Assets
+      - name: Release and Upload Assets
         uses: ncipollo/release-action@v1
         if: ${{ env.commit }}
         with:
           name: ${{ env.tag }}
           tag: ${{ env.tag }}
-          bodyFile: ${{ matrix.repoName }}/apk/${{ matrix.userName }}-Release.log
           allowUpdates: true
           removeArtifacts: true
           artifacts: |
             ${{ matrix.repoName }}/apk/*.apk
-            ${{ matrix.repoName }}/apk/sourceCode-${{ env.commitS }}.*
-      
-      - name: Push to master
-        if: ${{ env.commit }}
-        run: |
-          rm -rf ${{ matrix.repoName }}
-          git reset --hard
-          sed -i '/url =/d' ./.git/config
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote set-url --add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
-          git pull --rebase
-          sed -i "/${{ matrix.userName }}\/${{ matrix.repoName }}/s#Updated: [a-zA-Z0-9]*#Updated: ${{ env.commit }}#" README.md
-          git add --all
-          git commit -m "${{ env.commit }}"
-          git push -u -f origin master
   
-
-  clean:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Delete older workflow runs and artifacts
-        uses: Mattraks/delete-workflow-runs@main
+      - name: 删除旧发布的固件
+        uses: dev-drprasad/delete-older-releases@v0.2.1
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         with:
-          token: ${{ github.token }}
+          keep_latest: 2
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            
+      - name: 删除过时工作流程
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          retain_days: 3
-          keep_minimum_runs: 3
+          retain_days: 1
+          keep_minimum_runs: 2
