@@ -1,20 +1,12 @@
 name: chengxue2020_多仓版_build
 
 on:
-  #schedule:
-    #- cron:  '30 5,17 * * *'
-  #push:
-    #branches:
-      #- main
-  #pull_request:
+  schedule:
+    - cron: 30 */2 * * * # 每隔 2 小时的第 30 分钟会自动触发工作流执行
   workflow_dispatch:
     inputs:
       rebuild:
         description: '忽略构建记录以重新构建'
-        required: false
-        type: boolean
-      donotpublish:
-        description: '构建后不提交发布新版'
         required: false
         type: boolean
 
@@ -146,13 +138,8 @@ jobs:
         with:
           name: ${{ matrix.appName }}
           path: ${{ matrix.repoName }}/apk/*
-       
-      - name: Whether Or Not to Publish
-        if: ${{ inputs.donotpublish && env.commit }}
-        run: |
-          echo "commit=" >> $GITHUB_ENV
-          
-      - name: Release and Upload Assets
+         
+      - name: Release 和 Upload Assets
         uses: ncipollo/release-action@v1
         if: ${{ env.commit }}
         with:
