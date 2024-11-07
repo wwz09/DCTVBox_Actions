@@ -32,7 +32,7 @@ jobs:
           - userName: crewray
             repoName: tvbox
             branchName: main
-            jdkVersion: 11
+            jdkVersion: 17
           - userName: muxd93
             repoName: TVBoxOS_XD
             branchName: main
