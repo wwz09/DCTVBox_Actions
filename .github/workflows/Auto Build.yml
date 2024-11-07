@@ -2,12 +2,12 @@ name: Auto Build
 
 on:
   schedule:
-    - cron:  '* 5 10 * *'
+    - cron: 30 */2 * * * # 每隔 2 小时的第 30 分钟会自动触发工作流执行
   workflow_dispatch:
     inputs:
       rebuild:
         description: '忽略构建记录以重新构建'
-        required: true
+        required: false
         type: boolean
 
 jobs:
@@ -124,19 +124,6 @@ jobs:
             find "$dir" -type f -name "*.apk" -exec sh -c 'cp "$1" "apk/${{ matrix.userName }}-${{ matrix.repoName }}-${{ matrix.branchName }}-${1##*/}"' sh {} \;
           done
 
-      - name: Release Note
-        if: ${{ env.commit }}
-        working-directory: TVBoxOSC
-        run: |
-          lastCommit=$(grep "${{ matrix.userName }}\/${{ matrix.repoName }}\/${{ matrix.branchName }}" ${{ github.workspace }}/README.md |grep -o '[a-z0-9]\{40\}')
-          export LESSCHARSET=utf-8
-          echo -e "Credit: [${{ matrix.userName }}](${{ env.upStream }})\nCommit: ${{ env.commit }}\nChangelog:" > apk/${{ matrix.userName }}-Release.log
-          if [ "${{ env.commit }}" == "${lastCommit}" ]; then
-            git log --pretty=format:%B ${{ env.commitS }} -1 |sed -e "s# \{2,\}#\n#g" -e "/^Merge \(pull\|branch\|remote\)/d" -e '/^$/d' |cat -n |sort -k2,2 -k1,1n |uniq -f1 |sort -k1,1n |cut -f2- >> apk/${{ matrix.userName }}-Release.log
-          else
-            git log --pretty=format:%B ${{ env.commitS }}...${lastCommit:0:7} |sed -e "s# \{2,\}#\n#g" -e "/^Merge \(pull\|branch\|remote\)/d" -e '/^$/d' |cat -n |sort -k2,2 -k1,1n |uniq -f1 |sort -k1,1n |cut -f2- >> apk/${{ matrix.userName }}-Release.log
-          fi
-
       - name: Upload App To Artifact
         uses: actions/upload-artifact@v3
         if: ${{ env.commit }}
@@ -145,12 +132,7 @@ jobs:
           path: |
             TVBoxOSC/apk/*
 
-      - name: Whether Or Not to Publish
-        if: ${{ inputs.donotpublish && env.commit }}
-        run: |
-          echo "commit=" >> $GITHUB_ENV
-
-      - name: Release 和 Upload Assets
+      - name: Release And Upload Assets
         uses: ncipollo/release-action@main
         if: ${{ env.commit }}
         with:
@@ -170,21 +152,6 @@ jobs:
           delete_tag_pattern: ${{ matrix.userName }}_${{ matrix.repoName }}_${{ matrix.branchName }}.*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push to master
-        if: ${{ env.commit }}
-        run: |
-          rm -rf TVBoxOSC
-          sed -i '/url =/d' ./.git/config
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote set-url --add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
-          git pull --rebase
-          sed -i "/${{ matrix.userName }}\/${{ matrix.repoName }}\/${{ matrix.branchName }}/s#Updated: [a-zA-Z0-9]*#Updated: ${{ env.commit }}#" README.md
-          sed -i "s/update at .*/update at $(date '+%Y-%m-%d %H:%M:%S')/" README.md
-          git add --all
-          git commit -m "${{ env.commit }}"
-          git push -u -f origin master
 
       - name: 删除过时工作流程
         uses: Mattraks/delete-workflow-runs@main
