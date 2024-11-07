@@ -28,18 +28,23 @@ jobs:
           - userName: q215613905
             repoName: TVBoxOS
             branchName: main
+            diy: q215613905.sh
             java_ver: 11
           - userName: takagen99
             repoName: Box
             branchName: main
+            diy: takagen99.sh
             java_ver: 17
           - userName: mlabalabala
             repoName: box
             branchName: main
-          #- userName: XiaoRanLiu3119
-            #repoName: TVBoxOS-Mobile
-            #branchName: main
-            
+            diy: mlabalabalaDC.sh
+            java_ver: 11
+          - userName: wwz09
+            repoName: duocangbox
+            branchName: main
+            diy: chengxue2020DC.sh
+            java_ver: 11
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -58,14 +63,20 @@ jobs:
             echo "commitS=${commit:0:7}" >> $GITHUB_ENV
           fi
 
-      - name: Checkout Source Code
+      - name: 签出源代码
         if: ${{ env.commit }}
         run: |
           cd TVBoxOSC
           git checkout ${{ env.commit }}
           echo "tag=$(git log --date=format:'%Y%m%d-%H%M' --pretty=format:%cd ${{ env.commitS }} -1)" >> $GITHUB_ENV
 
-      - name: Extra Modify
+      - name: DIY 
+        if: ${{ env.commit }}
+        working-directory: TVBoxOSC
+        run: |
+          chmod +x ${{ github.workspace }}/DIY/${{ matrix.diy }}
+          bash ${{ github.workspace }}/DIY/${{ matrix.diy }}
+      - name: 额外修改
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
         run: |
@@ -79,7 +90,7 @@ jobs:
             sed -i "/jitpack.io/a\        maven { url 'https://o0HalfLife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }" build.gradle
           fi
           
-      - name: Compress Source Code
+      - name: 压缩源代码
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
         run: |
@@ -93,7 +104,7 @@ jobs:
           sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" app/build.gradle
           sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" player/build.gradle
 
-      - name: Release Apk Sign
+      - name: 安卓安装包签名
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
         run: |
@@ -129,14 +140,14 @@ jobs:
         if: ${{ env.commit }}
         uses: gradle/actions/setup-gradle@main
 
-      - name: Build With Gradle
+      - name: 进行构建
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
         run: |
           chmod +x gradlew
           ./gradlew assemblerelease --build-cache --parallel --daemon --warning-mode all
 
-      - name: Prepare App
+      - name: 准备应用程序
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
         run: |
@@ -146,7 +157,7 @@ jobs:
             mv "$file" apk/TVBox_${{ matrix.userName }}_${{ env.tag }}.apk
           done
           
-      - name: Upload App To Artifact
+      - name: 程序上传
         uses: actions/upload-artifact@main
         if: ${{ env.commit }}
         continue-on-error: true
@@ -161,7 +172,7 @@ jobs:
         run: |
           echo "commit=" >> $GITHUB_ENV
 
-      - name: Release 和 Upload Assets
+      - name: 发布并上传
         uses: ncipollo/release-action@main
         if: ${{ env.commit }}
         continue-on-error: true
