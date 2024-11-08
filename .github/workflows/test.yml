@@ -29,7 +29,7 @@ jobs:
             repoName: TVBoxOS
             branchName: main
             diy: q215613905.sh
-            java_ver: 11
+            java_ver: 17
           - userName: takagen99
             repoName: Box
             branchName: main
@@ -40,18 +40,33 @@ jobs:
             branchName: main
             diy: mlabalabalaDC.sh
             java_ver: 11
-          - userName: wwz09
-            repoName: duocangbox
+          - userName: chengxue2020
+            repoName: box
             branchName: main
             diy: chengxue2020DC.sh
             java_ver: 11
+	  - userName: crewray
+            repoName: tvbox
+            branchName: main
+            diy: crewrayDC.sh
+            java_ver: 11
+	  - userName: muxd93
+            repoName: TVBoxOS_XD
+            branchName: main
+            diy: muxd93DC.sh
+            java_ver: 11
+	  - userName: zxyadc
+            repoName: b-box
+            branchName: main
+            diy: zxyadcDC.sh
+            java_ver: 11      
     steps:
       - name: Checkout
         uses: actions/checkout@main
         with:
           fetch-depth: 0
-
-      - name: Check New Commit
+          
+      - name: 检查新的提交
         run: |
           upStream=https://github.com/${{ matrix.userName }}/${{ matrix.repoName }}
           echo "upStream=$upStream" >> $GITHUB_ENV
