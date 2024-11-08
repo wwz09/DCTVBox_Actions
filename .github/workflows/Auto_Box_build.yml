@@ -1,4 +1,4 @@
-name: Auto_Box_build
+name: Auto Box build
 
 on:
   schedule:
