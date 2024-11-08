@@ -1,12 +1,8 @@
-name: muxd93_多线路版_build
+name: Auto_Box_build
 
 on:
   schedule:
-    - cron:  '* 5 10 * *'
-  #push:
-    #branches:
-      #- main
-  #pull_request:
+    - cron: 0 4-16/6 * * *
   workflow_dispatch:
     inputs:
       rebuild:
@@ -17,6 +13,10 @@ on:
         description: '构建后不提交发布新版'
         required: false
         type: boolean
+      testOption:
+        description: 'arm64支持，不支持ijk解码'
+        required: false
+        type: boolean
 
 jobs:
   build:
@@ -25,80 +25,103 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - userName: muxd93
+          - userName: q215613905
+            repoName: TVBoxOS
+            branchName: main
+            diy: q215613905.sh
+            java_ver: 17
+          - userName: takagen99
+            repoName: Box
+            branchName: main
+            diy: takagen99.sh
+            java_ver: 17
+          - userName: mlabalabala
+            repoName: box
+            branchName: main
+            diy: mlabalabalaDC.sh
+            java_ver: 11
+          - userName: chengxue2020
+            repoName: box
+            branchName: main
+            diy: chengxue2020DC.sh
+            java_ver: 11
+	  - userName: crewray
+            repoName: tvbox
+            branchName: main
+            diy: crewrayDC.sh
+            java_ver: 11
+	  - userName: muxd93
             repoName: TVBoxOS_XD
             branchName: main
-            appName: Muxd93_TVBOX
-            osName: DXB
-          
+            diy: muxd93DC.sh
+            java_ver: 11
+	  - userName: zxyadc
+            repoName: b-box
+            branchName: main
+            diy: zxyadcDC.sh
+            java_ver: 11      
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@main
         with:
           fetch-depth: 0
-      - name: Check New Commit
+          
+      - name: 检查新的提交
         run: |
           upStream=https://github.com/${{ matrix.userName }}/${{ matrix.repoName }}
           echo "upStream=$upStream" >> $GITHUB_ENV
-          commit=$(curl -sL $upStream/commits/${{ matrix.branchName }} |grep -o "/${{ matrix.userName }}/${{ matrix.repoName }}/commit/[a-z0-9]\+" |head -1 | cut -d\/ -f5)
-          if ! grep -q "$commit" README.md || [ "${{ inputs.rebuild }}" == "true" ]; then
+          git clone https://github.com/${{ matrix.userName }}/${{ matrix.repoName }} TVBoxOSC
+          cd TVBoxOSC
+          commit=$(git rev-parse HEAD)
+          if ! grep -q "$commit" ../README.md || [ "${{ inputs.rebuild }}" == "true" ]; then
             echo "commit=$commit" >> $GITHUB_ENV
             echo "commitS=${commit:0:7}" >> $GITHUB_ENV
           fi
-          
-      - name: Checkout Source Code
+
+      - name: 签出源代码
         if: ${{ env.commit }}
         run: |
-          git clone ${{ env.upStream }} ${{ matrix.repoName }}
-          cd ${{ matrix.repoName }}
+          cd TVBoxOSC
           git checkout ${{ env.commit }}
           echo "tag=$(git log --date=format:'%Y%m%d-%H%M' --pretty=format:%cd ${{ env.commitS }} -1)" >> $GITHUB_ENV
-      
-      #- name: DIY PY
-        #if: ${{ env.commit }}
-        #working-directory: ${{ matrix.repoName }}
-        #run: |
-          #chmod +x ${{ github.workspace }}/DIY/py.sh
-          #bash ${{ github.workspace }}/DIY/py.sh
-          
-      - name: DIY
+
+      - name: DIY 
         if: ${{ env.commit }}
-        working-directory: ${{ matrix.repoName }}
+        working-directory: TVBoxOSC
         run: |
-          cp -rf $GITHUB_WORKSPACE/DIY/png/图标5-1.png app/src/main/res/drawable/app_banner.png
-          cp -rf $GITHUB_WORKSPACE/DIY/png/图标5.png app/src/main/res/drawable-hdpi/app_icon.png
-          cp -rf $GITHUB_WORKSPACE/DIY/png/图标5.png app/src/main/res/drawable-xhdpi/app_icon.png
-          cp -rf $GITHUB_WORKSPACE/DIY/png/图标5.png app/src/main/res/drawable-xxhdpi/app_icon.png
-          cp -rf $GITHUB_WORKSPACE/DIY/png/图标5.png app/src/main/res/drawable-xxxhdpi/app_icon.png
-          cp -rf $GITHUB_WORKSPACE/DIY/png/app_bg.png app/src/main/res/drawable/app_bg.png
-          cp -rf $GITHUB_WORKSPACE/DIY/dx/config.xml app/src/main/res/values/config.xml
-          sed -i 's%TVBox%源源影视%g' app/src/main/res/values/strings.xml
-          sed -i 's%TVBox%源源影视%g' app/src/main/res/values-zh/strings.xml 
-          sed -i 's%Hawk.put(HawkConfig.PLAY_TYPE, 1);%Hawk.put(HawkConfig.HOME_REC, 0);       // Home Rec 0=豆瓣, 1=推荐, 2=历史\n Hawk.put(HawkConfig.PLAY_TYPE, 1);      // Player   0=系统, 1=IJK, 2=Exo\n Hawk.put(HawkConfig.IJK_CODEC, "硬解码"); // IJK Render 软解码, 硬解码\n%g' app/src/main/java/com/github/tvbox/osc/base/App.java
-          
-      - name: Extra Modify
+          chmod +x ${{ github.workspace }}/DIY/${{ matrix.diy }}
+          bash ${{ github.workspace }}/DIY/${{ matrix.diy }}
+      - name: 额外修改
         if: ${{ env.commit }}
-        working-directory: ${{ matrix.repoName }}
+        working-directory: TVBoxOSC
         run: |
           echo '修改VersionName'
           sed -i "/versionName/s#[0-9a-zA-Z_\.\'\"-]\+\$#\'${{ env.tag }}\'#" app/build.gradle
           sed -i "/android:text=/s#=\"#=\"${{ env.tag }}\\\\n\\\\n#" app/src/main/res/layout/dialog_about.xml
           echo 'crosswalk源，防挂'
           if grep -q 'crosswalk' build.gradle; then
-            sed -i "/crosswalk/a\        maven { url 'https://o0halflife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }" build.gradle
+            sed -i "/crosswalk/a\        maven { url 'https://o0HalfLife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }" build.gradle
           else
-            sed -i "/jitpack.io/a\        maven { url 'https://o0halflife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }" build.gradle
+            sed -i "/jitpack.io/a\        maven { url 'https://o0HalfLife0o.github.io/crosswalk/releases/crosswalk/android/maven2' }" build.gradle
           fi
+          
+      - name: 压缩源代码
+        if: ${{ env.commit }}
+        working-directory: TVBoxOSC
+        run: |
+          tar -cJf source-${{ env.commitS }}.tar.xz --exclude=.git --exclude=.github *
+
       - name: Option For Test
         if: ${{ inputs.testOption }}
-        working-directory: ${{ matrix.repoName }}
+        working-directory: TVBoxOSC
         run: |
           #添加arm64支持，不支持ijk解码
           sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" app/build.gradle
           sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" player/build.gradle
-      - name: Release Apk Sign
+
+      - name: 安卓安装包签名
         if: ${{ env.commit }}
-        working-directory: ${{ matrix.repoName }}
+        working-directory: TVBoxOSC
         run: |
           signingConfigs='ICAgIHNpZ25pbmdDb25maWdzIHtcCiAgICAgICAgaWYgKHByb2plY3QuaGFzUHJvcGVydHkoIlJFTEVBU0VfU1RPUkVfRklMRSIpKSB7XAogICAgICAgICAgICBteUNvbmZpZyB7XAogICAgICAgICAgICAgICAgc3RvcmVGaWxlIGZpbGUoUkVMRUFTRV9TVE9SRV9GSUxFKVwKICAgICAgICAgICAgICAgIHN0b3JlUGFzc3dvcmQgUkVMRUFTRV9TVE9SRV9QQVNTV09SRFwKICAgICAgICAgICAgICAgIGtleUFsaWFzIFJFTEVBU0VfS0VZX0FMSUFTXAogICAgICAgICAgICAgICAga2V5UGFzc3dvcmQgUkVMRUFTRV9LRVlfUEFTU1dPUkRcCiAgICAgICAgICAgICAgICB2MVNpZ25pbmdFbmFibGVkIHRydWVcCiAgICAgICAgICAgICAgICB2MlNpZ25pbmdFbmFibGVkIHRydWVcCiAgICAgICAgICAgICAgICBlbmFibGVWM1NpZ25pbmcgPSB0cnVlXAogICAgICAgICAgICAgICAgZW5hYmxlVjRTaWduaW5nID0gdHJ1ZVwKICAgICAgICAgICAgfVwKICAgICAgICB9XAogICAgfVwKXA=='
           signingConfig='ICAgICAgICAgICAgaWYgKHByb2plY3QuaGFzUHJvcGVydHkoIlJFTEVBU0VfU1RPUkVfRklMRSIpKSB7XAogICAgICAgICAgICAgICAgc2lnbmluZ0NvbmZpZyBzaWduaW5nQ29uZmlncy5teUNvbmZpZ1wKICAgICAgICAgICAgfVwK'
@@ -110,67 +133,69 @@ jobs:
           sed -i '$a\RELEASE_KEY_ALIAS=TVBoxOSC'            ./gradle.properties
           sed -i '$a\RELEASE_STORE_PASSWORD=TVBoxOSC'       ./gradle.properties
           sed -i '$a\RELEASE_KEY_PASSWORD=TVBoxOSC'         ./gradle.properties
+
+      - name: Cache
+        uses: actions/cache@main
+        if: ${{ env.commit }}
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-${{ matrix.userName }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.userName }}-
+            
+      - uses: actions/setup-java@main
+        if: ${{ matrix.java_ver }}
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java_ver }}
           
       - name: Setup Gradle
         if: ${{ env.commit }}
-        uses: gradle/gradle-build-action@v3
-        
-      - name: Build With Gradle
+        uses: gradle/actions/setup-gradle@main
+
+      - name: 进行构建
         if: ${{ env.commit }}
-        working-directory: ${{ matrix.repoName }}
+        working-directory: TVBoxOSC
         run: |
           chmod +x gradlew
           ./gradlew assemblerelease --build-cache --parallel --daemon --warning-mode all
-      
-      - name: Prepare App
+
+      - name: 准备应用程序
         if: ${{ env.commit }}
-        working-directory: ${{ matrix.repoName }}
+        working-directory: TVBoxOSC
         run: |
           rm -rf apk/
           mkdir -p apk/
           for file in `find ~ -name "*.apk" -print`; do
-            mv "$file" apk/${{ matrix.appName }}_${{ env.tag }}.apk
+            mv "$file" apk/TVBox_${{ matrix.userName }}_${{ env.tag }}.apk
           done
-      
-      - name: Upload App To Artifact
-        uses: actions/upload-artifact@v4
+          
+      - name: 程序上传
+        uses: actions/upload-artifact@main
         if: ${{ env.commit }}
+        continue-on-error: true
         with:
-          name: ${{ matrix.appName }}
-          path: ${{ matrix.repoName }}/apk/*
-       
+          name: ${{ matrix.userName }}-${{ matrix.repoName }}
+          path: |
+            TVBoxOSC/apk/*
+
       - name: Whether Or Not to Publish
         if: ${{ inputs.donotpublish && env.commit }}
+        continue-on-error: true
         run: |
           echo "commit=" >> $GITHUB_ENV
-          
-      - name: Release and Upload Assets
-        uses: ncipollo/release-action@v1
+
+      - name: 发布并上传
+        uses: ncipollo/release-action@main
         if: ${{ env.commit }}
+        continue-on-error: true
         with:
           name: ${{ env.tag }}
           tag: ${{ env.tag }}
           allowUpdates: true
           removeArtifacts: true
           artifacts: |
-            ${{ matrix.repoName }}/apk/*.apk
-  
-      - name: 删除旧发布的固件
-        uses: dev-drprasad/delete-older-releases@v0.3.4
-        if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
-        with:
-          keep_latest: 2
-          delete_tags: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            TVBoxOSC/apk/*.apk
             
-      - name: 删除过时工作流程
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          retain_days: 1
-          keep_minimum_runs: 2
-            
-      
-      
