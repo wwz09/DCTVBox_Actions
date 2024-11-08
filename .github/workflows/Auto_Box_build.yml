@@ -35,9 +35,9 @@ jobs:
             repoName: box
             branchName: main
             diy: mlabalabalaDC.sh
-            java_ver: 11
-          - userName: chengxue2020
-            repoName: box
+            java_ver: 17
+          - userName: wwz09
+            repoName: duocangbox
             branchName: main
             diy: chengxue2020DC.sh
             java_ver: 11
@@ -45,7 +45,7 @@ jobs:
             repoName: tvbox
             branchName: main
             diy: crewrayDC.sh
-            java_ver: 11
+            java_ver: 17
           - userName: muxd93
             repoName: TVBoxOS_XD
             branchName: main
