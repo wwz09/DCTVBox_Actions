@@ -34,6 +34,22 @@ jobs:
             repoName: box
             branchName: main
             diy: mlabalabalaDC.sh
+          - userName: chengxue2020
+            repoName: box
+            branchName: main
+            diy: chengxue2020DC.sh
+          - userName: crewray
+            repoName: tvbox
+            branchName: main
+            diy: crewrayDC.sh
+          - userName: muxd93
+            repoName: TVBoxOS_XD
+            branchName: main
+            diy: muxd93DC.sh
+          - userName: zxyadc
+            repoName: b-box
+            branchName: main
+            diy: zxyadcDC.sh
     steps:
       - name: Checkout
         uses: actions/checkout@main
