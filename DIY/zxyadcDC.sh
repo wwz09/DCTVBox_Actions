@@ -15,8 +15,6 @@ cp -rf $GITHUB_WORKSPACE/DIY/dc/ApiDialog.java app/src/main/java/com/github/tvbo
 cp -rf $GITHUB_WORKSPACE/DIY/dc/ModelSettingFragment.java app/src/main/java/com/github/tvbox/osc/bbox/ui/fragment/ModelSettingFragment.java
 cp -rf $GITHUB_WORKSPACE/DIY/dc/Checker.java app/src/main/java/com/github/tvbox/osc/bbox/util/Checker.java
 cp -rf $GITHUB_WORKSPACE/DIY/dc/App.java app/src/main/java/com/github/tvbox/osc/bbox/base/App.java
-cp -rf $GITHUB_WORKSPACE/DIY/dc/build.gradle app/build.gradle
-cp -rf $GITHUB_WORKSPACE/DIY/dc/settings.gradle ./settings.gradle
 sed -i 's%tv.org.eu.bunnyabc%tv.org.eu.bunnyabc.zxy%g' app/build.gradle
 sed -i 's%Jade%圆梦影视%g' app/src/main/res/values/strings.xml
 

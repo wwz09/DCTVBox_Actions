@@ -7,8 +7,6 @@ cp -rf $GITHUB_WORKSPACE/DIY/png/图标5.png app/src/main/res/drawable-xxhdpi/ap
 cp -rf $GITHUB_WORKSPACE/DIY/png/图标5.png app/src/main/res/drawable-xxxhdpi/app_icon.png
 cp -rf $GITHUB_WORKSPACE/DIY/png/app_bg.png app/src/main/res/drawable/app_bg.png
 cp -rf $GITHUB_WORKSPACE/DIY/dx/config.xml app/src/main/res/values/config.xml
-cp -rf $GITHUB_WORKSPACE/DIY/dc/build.gradle app/build.gradle
-cp -rf $GITHUB_WORKSPACE/DIY/dc/settings.gradle ./settings.gradle
 sed -i 's%tv.org.eu.bunnyabc%tv.org.eu.bunnyabc.mux%g' app/build.gradle
 sed -i 's%TVBox%源源影视%g' app/src/main/res/values/strings.xml
 sed -i 's%TVBox%源源影视%g' app/src/main/res/values-zh/strings.xml 
