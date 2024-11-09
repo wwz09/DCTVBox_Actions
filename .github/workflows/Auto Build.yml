@@ -66,12 +66,13 @@ jobs:
           git checkout ${{ env.commit }}
           echo "tag=$(git log --date=format:'%Y%m%d-%H%M' --pretty=format:%cd ${{ env.commitS }} -1)" >> $GITHUB_ENV
 
-      - name: DIY 
-        if: ${{ env.commit }}
-        working-directory: TVBoxOSC
-        run: |
-          chmod +x ${{ github.workspace }}/DIY/${{ matrix.diy }}
-          bash ${{ github.workspace }}/DIY/${{ matrix.diy }}
+      #- name: DIY 
+      #  if: ${{ env.commit }}
+      #  working-directory: TVBoxOSC
+      #  run: |
+      #    chmod +x ${{ github.workspace }}/DIY/${{ matrix.diy }}
+      #    bash ${{ github.workspace }}/DIY/${{ matrix.diy }}
+          
       - name: 额外修改
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
